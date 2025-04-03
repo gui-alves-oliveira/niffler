@@ -1,30 +1,43 @@
-import { authClient } from "@/lib/auth-client";
+import { ZodError } from "zod";
 import { initTRPC, TRPCError } from "@trpc/server";
 
-/**
- * Initialization of tRPC backend
- * Should be done only once per backend!
- */
-const t = initTRPC.create();
+import { db } from "@/server/db";
+import { auth } from "@/lib/auth";
 
-/**
- * Export reusable router and procedure helpers
- * that can be used throughout the router
- */
+export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const authSession = await auth.api.getSession({
+    headers: opts.headers,
+  });
+
+  return {
+    db,
+    user: authSession?.user,
+  };
+};
+
+type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+
+const t = initTRPC.context<Context>().create({
+  errorFormatter: ({ shape, error }) => ({
+    ...shape,
+    data: {
+      ...shape.data,
+      zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
+    },
+  }),
+});
+
+export const createCallerFactory = t.createCallerFactory;
 export const router = t.router;
 export const publicProcedure = t.procedure;
-export const privateProcedure = publicProcedure.use(async (opts) => {
-  const { data } = await authClient.getSession();
 
-  console.log(data);
-
-  if (!data || data.session) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.user?.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-
-  return opts.next({
+  return next({
     ctx: {
-      session: data.session,
+      user: ctx.user,
     },
   });
 });

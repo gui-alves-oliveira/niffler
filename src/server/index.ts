@@ -1,9 +1,8 @@
-import { privateProcedure, router } from "./trpc";
+import { greetingRouter } from "./routes/greeting";
+import { router } from "./trpc";
 
 export const appRouter = router({
-  users: privateProcedure.query(async () => {
-    return [{ hello: "world" }];
-  }),
+  greeting: greetingRouter,
 });
 
 export type AppRouter = typeof appRouter;
