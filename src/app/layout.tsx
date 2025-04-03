@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="flex h-screen flex-col bg-white">
       <body>
         <Providers>{children}</Providers>
       </body>
