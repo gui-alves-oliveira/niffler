@@ -1,4 +1,5 @@
-import { initTRPC } from "@trpc/server";
+import { authClient } from "@/lib/auth-client";
+import { initTRPC, TRPCError } from "@trpc/server";
 
 /**
  * Initialization of tRPC backend
@@ -12,4 +13,18 @@ const t = initTRPC.create();
  */
 export const router = t.router;
 export const publicProcedure = t.procedure;
-export const privateProcedure = t.procedure;
+export const privateProcedure = publicProcedure.use(async (opts) => {
+  const { data } = await authClient.getSession();
+
+  console.log(data);
+
+  if (!data || data.session) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return opts.next({
+    ctx: {
+      session: data.session,
+    },
+  });
+});
