@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,25 +31,25 @@ export function SignInForm() {
           signInForm.reset();
           router.push("/dashboard");
         },
-      }
+      },
     );
   };
 
   return (
-    <div>
+    <div className="p-6">
       <form onSubmit={signInForm.handleSubmit(handleSignUp)}>
-        <fieldset disabled={signInFromDisabled}>
+        <fieldset className="space-y-4" disabled={signInFromDisabled}>
           <div>
             <label htmlFor="">E-mail</label>
-            <input {...signInForm.register("email")} type="text" />
+            <Input {...signInForm.register("email")} type="text" />
           </div>
 
           <div>
             <label htmlFor="">Password</label>
-            <input {...signInForm.register("password")} type="text" />
+            <Input {...signInForm.register("password")} type="text" />
           </div>
 
-          <button>Entrar</button>
+          <Button>Entrar</Button>
         </fieldset>
       </form>
     </div>

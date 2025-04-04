@@ -24,13 +24,9 @@ export function SignUpForm() {
         onSuccess: () => {
           signUpForm.reset();
         },
-      }
+      },
     );
   };
-
-  const session = authClient.useSession();
-
-  console.log(session);
 
   return (
     <div>

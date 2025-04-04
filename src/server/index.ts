@@ -1,8 +1,10 @@
-import { greetingRouter } from "./routes/greeting";
+import { categoriesRouter } from "./routes/categories";
+import { transactionsRouter } from "./routes/transactions";
 import { router } from "./trpc";
 
 export const appRouter = router({
-  greeting: greetingRouter,
+  categories: categoriesRouter,
+  transactions: transactionsRouter,
 });
 
 export type AppRouter = typeof appRouter;
